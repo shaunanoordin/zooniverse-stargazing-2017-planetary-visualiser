@@ -1,11 +1,11 @@
 {
-  "name": "starter-js",
-  "version": "0.0.2",
+  "name": "zooniverse-stargazing-2017-planetary-visualiser",
+  "version": "0.0.1",
   "repository": {
     "type": "git",
-    "url": "https://github.com/shaunanoordin/starter-js/"
+    "url": "https://github.com/shaunanoordin/zooniverse-stargazing-2017-planetary-visualiser"
   },
-  "homepage": "https://github.com/shaunanoordin/starter-js/",
+  "homepage": "https://github.com/shaunanoordin/zooniverse-stargazing-2017-planetary-visualiser",
   "babel": {
     "presets": ["es2015"]
   },
