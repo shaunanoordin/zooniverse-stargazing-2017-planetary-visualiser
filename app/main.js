@@ -104,10 +104,12 @@
 	    this.html.control_starScale.onchange = this.control_onChange.bind(this);
 	    this.html.control_orbitScale.onchange = this.control_onChange.bind(this);
 	    this.html.control_planetScale.onchange = this.control_onChange.bind(this);
+	    this.html.control_daysPerSecond.onchange = this.control_onChange.bind(this);
 	    this.html.control_zoom.onkeyup = this.control_onChange.bind(this);
 	    this.html.control_starScale.onkeyup = this.control_onChange.bind(this);
 	    this.html.control_orbitScale.onkeyup = this.control_onChange.bind(this);
 	    this.html.control_planetScale.onkeyup = this.control_onChange.bind(this);
+	    this.html.control_daysPerSecond.onkeyup = this.control_onChange.bind(this);
 	    //----------------------------------------------------------------
 
 	    //Set up the SVG
@@ -203,7 +205,7 @@
 	        }
 	      }
 
-	      this.time += TIME_STEP;
+	      this.time += this.input.control_daysPerSecond / FRAMES_PER_SECOND;
 	    }
 	  }, {
 	    key: "updateSizes",
