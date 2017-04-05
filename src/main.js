@@ -2,17 +2,18 @@
 Starter JS
 ==========
 
-Starter tempalte for JS projects
+A planetary visualiser for the ABC/Zooniverse's Stargazing 2017 event.
+Exoplanets ahoy!
 
-(Shaun A. Noordin || shaunanoordin.com || 20160509)
+(Shaun A. Noordin || shaunanoordin.com || 20170405)
 ********************************************************************************
  */
 
 import {ImportExample} from "./importExample.js";
 
-const STAR_RADIUS_SCALE   = 0.00000003;
-const PLANET_RADIUS_SCALE = 0.00000003;
-const DISTANCE_SCALE      = 0.00000003;
+//const STAR_RADIUS_SCALE   = 0.00000003;
+//const PLANET_RADIUS_SCALE = 0.00000003;
+//const DISTANCE_SCALE      = 0.00000003;
 const RADIUS_SUN = 695700000;  //m
 const RADIUS_EARTH = 6371000;  //m
 const AU = 149597870700;  //m
@@ -30,9 +31,30 @@ class App {
     this.html = {
       app: document.getElementById("app"),
       svg: document.getElementById("svg"),
+      control_zoom: document.getElementById("control_zoom"),
+      control_starScale: document.getElementById("control_starScale"),
+      control_orbitScale: document.getElementById("control_orbitScale"),
+      control_planetScale: document.getElementById("control_planetScale"),
+      control_daysPerSecond: document.getElementById("control_daysPerSecond"),
     };
     this.actors = {};
     this.time = 0;  //Number of days passed
+    
+    this.input = {
+      control_zoom: parseFloat(this.html.control_zoom.value),
+      control_starScale: parseFloat(this.html.control_starScale.value),
+      control_orbitScale: parseFloat(this.html.control_orbitScale.value),
+      control_planetScale: parseFloat(this.html.control_planetScale.value),
+      control_daysPerSecond: parseFloat(this.html.control_daysPerSecond.value),
+    };
+    this.html.control_zoom.onchange = this.control_onChange.bind(this);
+    this.html.control_starScale.onchange = this.control_onChange.bind(this);
+    this.html.control_orbitScale.onchange = this.control_onChange.bind(this);
+    this.html.control_planetScale.onchange = this.control_onChange.bind(this);
+    this.html.control_zoom.onkeyup = this.control_onChange.bind(this);
+    this.html.control_starScale.onkeyup = this.control_onChange.bind(this);
+    this.html.control_orbitScale.onkeyup = this.control_onChange.bind(this);
+    this.html.control_planetScale.onkeyup = this.control_onChange.bind(this);
     //----------------------------------------------------------------
     
     //Set up the SVG
@@ -61,25 +83,11 @@ class App {
     this.html.svg.append(ele);
     this.refs[ele.id] = ele;*/
     
-    let distanceFromStar, planet, orbit;
-    
     this.actors.exoStar = document.getElementById("exoStar");
-    this.actors.exoStar.setAttribute("r", parseFloat(this.actors.exoStar.dataset.radiusrelativetosol) * RADIUS_SUN * STAR_RADIUS_SCALE);
-    this.actors.exoStar.setAttribute("cx", 0);
-    this.actors.exoStar.setAttribute("cy", 0);
-    
     for (let name of PLANET_NAMES) {
-      planet = document.getElementById(name);
-      planet.setAttribute("r", parseFloat(planet.dataset.radiusrelativetoearth) * RADIUS_EARTH * PLANET_RADIUS_SCALE);
-      distanceFromStar = parseFloat(planet.dataset.distancefromstar) * AU * DISTANCE_SCALE;
-      planet.setAttribute("cx", 0);
-      planet.setAttribute("cy", distanceFromStar);
-      orbit = document.getElementById(name + "_orbit");
-      orbit.setAttribute("cx", 0);
-      orbit.setAttribute("cy", 0);
-      orbit.setAttribute("r", distanceFromStar);
-      this.actors[name] = planet;
+      this.actors[name] = document.getElementById(name);
     }
+    this.updateSizes();
     
     //----------------------------------------------------------------
     
@@ -89,7 +97,7 @@ class App {
   run() {
     for (let name of PLANET_NAMES) {
       let planet = this.actors[name];
-      let distanceFromStar = parseFloat(planet.dataset.distancefromstar) * AU * DISTANCE_SCALE;
+      let distanceFromStar = parseFloat(planet.dataset.distancefromstar) * AU * this.input.control_zoom * this.input.control_orbitScale;
       let orbitalPeriod = parseFloat(planet.dataset.orbitalperiod);
       let angle = (this.time % orbitalPeriod) / orbitalPeriod * 2 * Math.PI;
             
@@ -98,6 +106,30 @@ class App {
     }
     
     this.time += TIME_STEP;
+  }
+  
+  updateSizes() {
+    let distanceFromStar, planet, orbit;
+    
+    this.actors.exoStar.setAttribute("r", parseFloat(this.actors.exoStar.dataset.radiusrelativetosol) * RADIUS_SUN * this.input.control_zoom * this.input.control_starScale);
+    this.actors.exoStar.setAttribute("cx", 0);
+    this.actors.exoStar.setAttribute("cy", 0);
+    
+    for (let name of PLANET_NAMES) {
+      planet = document.getElementById(name);
+      planet.setAttribute("r", parseFloat(planet.dataset.radiusrelativetoearth) * RADIUS_EARTH  * this.input.control_zoom * this.input.control_planetScale);
+      distanceFromStar = parseFloat(planet.dataset.distancefromstar) * AU * this.input.control_zoom * this.input.control_orbitScale;
+      planet.setAttribute("cx", 0);
+      planet.setAttribute("cy", distanceFromStar);
+      orbit = document.getElementById(name + "_orbit");
+      orbit.setAttribute("r", distanceFromStar);
+    }
+  }
+  
+  control_onChange(e) {
+    if (!e.target || e.target.value === undefined || Number.isNaN(parseFloat(e.target.value))) return;
+    this.input[e.target.id] = parseFloat(e.target.value);
+    this.updateSizes();
   }
 }
 //==============================================================================

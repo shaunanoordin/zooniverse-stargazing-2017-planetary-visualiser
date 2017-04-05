@@ -50,9 +50,10 @@
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     Starter JS
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ==========
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     Starter tempalte for JS projects
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     A planetary visualiser for the ABC/Zooniverse's Stargazing 2017 event.
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     Exoplanets ahoy!
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     (Shaun A. Noordin || shaunanoordin.com || 20160509)
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     (Shaun A. Noordin || shaunanoordin.com || 20170405)
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ********************************************************************************
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      */
 
@@ -60,9 +61,9 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var STAR_RADIUS_SCALE = 0.00000003;
-	var PLANET_RADIUS_SCALE = 0.00000003;
-	var DISTANCE_SCALE = 0.00000003;
+	//const STAR_RADIUS_SCALE   = 0.00000003;
+	//const PLANET_RADIUS_SCALE = 0.00000003;
+	//const DISTANCE_SCALE      = 0.00000003;
 	var RADIUS_SUN = 695700000; //m
 	var RADIUS_EARTH = 6371000; //m
 	var AU = 149597870700; //m
@@ -82,10 +83,31 @@
 	    //----------------------------------------------------------------
 	    this.html = {
 	      app: document.getElementById("app"),
-	      svg: document.getElementById("svg")
+	      svg: document.getElementById("svg"),
+	      control_zoom: document.getElementById("control_zoom"),
+	      control_starScale: document.getElementById("control_starScale"),
+	      control_orbitScale: document.getElementById("control_orbitScale"),
+	      control_planetScale: document.getElementById("control_planetScale"),
+	      control_daysPerSecond: document.getElementById("control_daysPerSecond")
 	    };
 	    this.actors = {};
 	    this.time = 0; //Number of days passed
+
+	    this.input = {
+	      control_zoom: parseFloat(this.html.control_zoom.value),
+	      control_starScale: parseFloat(this.html.control_starScale.value),
+	      control_orbitScale: parseFloat(this.html.control_orbitScale.value),
+	      control_planetScale: parseFloat(this.html.control_planetScale.value),
+	      control_daysPerSecond: parseFloat(this.html.control_daysPerSecond.value)
+	    };
+	    this.html.control_zoom.onchange = this.control_onChange.bind(this);
+	    this.html.control_starScale.onchange = this.control_onChange.bind(this);
+	    this.html.control_orbitScale.onchange = this.control_onChange.bind(this);
+	    this.html.control_planetScale.onchange = this.control_onChange.bind(this);
+	    this.html.control_zoom.onkeyup = this.control_onChange.bind(this);
+	    this.html.control_starScale.onkeyup = this.control_onChange.bind(this);
+	    this.html.control_orbitScale.onkeyup = this.control_onChange.bind(this);
+	    this.html.control_planetScale.onkeyup = this.control_onChange.bind(this);
 	    //----------------------------------------------------------------
 
 	    //Set up the SVG
@@ -114,15 +136,7 @@
 	    this.html.svg.append(ele);
 	    this.refs[ele.id] = ele;*/
 
-	    var distanceFromStar = void 0,
-	        planet = void 0,
-	        orbit = void 0;
-
 	    this.actors.exoStar = document.getElementById("exoStar");
-	    this.actors.exoStar.setAttribute("r", parseFloat(this.actors.exoStar.dataset.radiusrelativetosol) * RADIUS_SUN * STAR_RADIUS_SCALE);
-	    this.actors.exoStar.setAttribute("cx", 0);
-	    this.actors.exoStar.setAttribute("cy", 0);
-
 	    var _iteratorNormalCompletion = true;
 	    var _didIteratorError = false;
 	    var _iteratorError = undefined;
@@ -131,19 +145,8 @@
 	      for (var _iterator = PLANET_NAMES[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 	        var name = _step.value;
 
-	        planet = document.getElementById(name);
-	        planet.setAttribute("r", parseFloat(planet.dataset.radiusrelativetoearth) * RADIUS_EARTH * PLANET_RADIUS_SCALE);
-	        distanceFromStar = parseFloat(planet.dataset.distancefromstar) * AU * DISTANCE_SCALE;
-	        planet.setAttribute("cx", 0);
-	        planet.setAttribute("cy", distanceFromStar);
-	        orbit = document.getElementById(name + "_orbit");
-	        orbit.setAttribute("cx", 0);
-	        orbit.setAttribute("cy", 0);
-	        orbit.setAttribute("r", distanceFromStar);
-	        this.actors[name] = planet;
+	        this.actors[name] = document.getElementById(name);
 	      }
-
-	      //----------------------------------------------------------------
 	    } catch (err) {
 	      _didIteratorError = true;
 	      _iteratorError = err;
@@ -159,6 +162,10 @@
 	      }
 	    }
 
+	    this.updateSizes();
+
+	    //----------------------------------------------------------------
+
 	    this.runCycle = setInterval(this.run.bind(this), 1000 / FRAMES_PER_SECOND);
 	  }
 
@@ -173,13 +180,13 @@
 	        for (var _iterator2 = PLANET_NAMES[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
 	          var name = _step2.value;
 
-	          var _planet = this.actors[name];
-	          var _distanceFromStar = parseFloat(_planet.dataset.distancefromstar) * AU * DISTANCE_SCALE;
-	          var orbitalPeriod = parseFloat(_planet.dataset.orbitalperiod);
+	          var planet = this.actors[name];
+	          var distanceFromStar = parseFloat(planet.dataset.distancefromstar) * AU * this.input.control_zoom * this.input.control_orbitScale;
+	          var orbitalPeriod = parseFloat(planet.dataset.orbitalperiod);
 	          var angle = this.time % orbitalPeriod / orbitalPeriod * 2 * Math.PI;
 
-	          _planet.setAttribute("cx", Math.cos(angle) * _distanceFromStar);
-	          _planet.setAttribute("cy", Math.sin(angle) * _distanceFromStar);
+	          planet.setAttribute("cx", Math.cos(angle) * distanceFromStar);
+	          planet.setAttribute("cy", Math.sin(angle) * distanceFromStar);
 	        }
 	      } catch (err) {
 	        _didIteratorError2 = true;
@@ -197,6 +204,55 @@
 	      }
 
 	      this.time += TIME_STEP;
+	    }
+	  }, {
+	    key: "updateSizes",
+	    value: function updateSizes() {
+	      var distanceFromStar = void 0,
+	          planet = void 0,
+	          orbit = void 0;
+
+	      this.actors.exoStar.setAttribute("r", parseFloat(this.actors.exoStar.dataset.radiusrelativetosol) * RADIUS_SUN * this.input.control_zoom * this.input.control_starScale);
+	      this.actors.exoStar.setAttribute("cx", 0);
+	      this.actors.exoStar.setAttribute("cy", 0);
+
+	      var _iteratorNormalCompletion3 = true;
+	      var _didIteratorError3 = false;
+	      var _iteratorError3 = undefined;
+
+	      try {
+	        for (var _iterator3 = PLANET_NAMES[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+	          var name = _step3.value;
+
+	          planet = document.getElementById(name);
+	          planet.setAttribute("r", parseFloat(planet.dataset.radiusrelativetoearth) * RADIUS_EARTH * this.input.control_zoom * this.input.control_planetScale);
+	          distanceFromStar = parseFloat(planet.dataset.distancefromstar) * AU * this.input.control_zoom * this.input.control_orbitScale;
+	          planet.setAttribute("cx", 0);
+	          planet.setAttribute("cy", distanceFromStar);
+	          orbit = document.getElementById(name + "_orbit");
+	          orbit.setAttribute("r", distanceFromStar);
+	        }
+	      } catch (err) {
+	        _didIteratorError3 = true;
+	        _iteratorError3 = err;
+	      } finally {
+	        try {
+	          if (!_iteratorNormalCompletion3 && _iterator3.return) {
+	            _iterator3.return();
+	          }
+	        } finally {
+	          if (_didIteratorError3) {
+	            throw _iteratorError3;
+	          }
+	        }
+	      }
+	    }
+	  }, {
+	    key: "control_onChange",
+	    value: function control_onChange(e) {
+	      if (!e.target || e.target.value === undefined || Number.isNaN(parseFloat(e.target.value))) return;
+	      this.input[e.target.id] = parseFloat(e.target.value);
+	      this.updateSizes();
 	    }
 	  }]);
 
