@@ -39,22 +39,37 @@ table
   flex-direction: column
   width: 100%
   height: 100%
-  max-width: 50em
   margin: 0 auto
   background: light-colour
 
-#app > header
-#app > footer
-  flex: 0 0 auto
-  padding: 1em
-  background: primary-colour
-  color: light-colour
+#svg
+  background: dark-colour
   
-  h1
-    margin: 0
-    padding: 0
-
-#app > main
-  flex: 1 1 auto
-  padding: 1em
-  background: light-colour
+  .star
+    fill: #fc3
+  
+  .planet
+    stroke-width: 1
+    stroke: #fff
+    
+    &#exoPlanet1
+      fill: #c33
+    &#exoPlanet2
+      fill: #39c
+    &#exoPlanet3
+      fill: #3c3
+    &#exoPlanet4
+      fill: #c3c
+    
+  .orbit
+    stroke-width: 1
+    fill: none
+    
+    &#exoPlanet1_orbit
+      stroke: #c33
+    &#exoPlanet2_orbit
+      stroke: #39c
+    &#exoPlanet3_orbit
+      stroke: #3c3
+    &#exoPlanet4_orbit
+      stroke: #c3c

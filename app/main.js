@@ -58,6 +58,12 @@
 	                                                                                                                                                          ********************************************************************************
 	                                                                                                                                                           */
 
+	var RADIUS_SCALE = 0.00000005;
+	var DISTANCE_SCALE = 0.00000005;
+	var RADIUS_SUN = 695700000; //m
+	var RADIUS_EARTH = 6371000; //m
+	var AU = 149597870700; //m
+
 	/*  Primary App Class
 	 */
 	//==============================================================================
@@ -65,10 +71,63 @@
 	var App = function App() {
 	  _classCallCheck(this, App);
 
-	  var importExample = new _importExample.ImportExample("HI THERE");
+	  //Set up the App
+	  //----------------------------------------------------------------
+	  this.html = {
+	    app: document.getElementById("app"),
+	    svg: document.getElementById("svg")
+	  };
+	  this.actors = {};
+	  //----------------------------------------------------------------
 
-	  this.console = document.getElementById("console");
-	  this.console.innerHTML = "This is a starter template for JS projects. <br>" + importExample.getText();
+	  //Set up the SVG
+	  //----------------------------------------------------------------
+	  this.appWidth = this.html.app.offsetHeight;
+	  this.appHeight = this.html.app.offsetHeight;
+	  this.appOffsetX = this.appWidth / 2;
+	  this.appOffsetY = this.appHeight / 2;
+
+	  var viewbox = -this.appOffsetX + " " + -this.appOffsetY + " " + this.appWidth + " " + this.appHeight;
+	  this.html.svg.setAttribute("viewBox", viewbox);
+	  //----------------------------------------------------------------
+
+	  //Add elements to the SVG
+	  //----------------------------------------------------------------
+	  /*let ele;
+	  const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
+	  const svgTool = document.createElementNS(, "use");
+	  
+	  ele = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+	  ele.id = "exoStar";
+	  ele.setAttribute("r", 100);
+	  ele.setAttribute("cx", 0);
+	  ele.setAttribute("cy", 0);
+	  ele.setAttribute("fill", "#fc3");
+	  this.html.svg.append(ele);
+	  this.refs[ele.id] = ele;*/
+
+	  var distanceFromStar = void 0,
+	      planet = void 0,
+	      orbit = void 0;
+
+	  this.actors.exoStar = document.getElementById("exoStar");
+	  this.actors.exoStar.setAttribute("r", parseFloat(this.actors.exoStar.dataset.radiusrelativetosol) * RADIUS_SUN * RADIUS_SCALE);
+	  this.actors.exoStar.setAttribute("cx", 0);
+	  this.actors.exoStar.setAttribute("cy", 0);
+
+	  planet = document.getElementById("exoPlanet1");
+	  console.log();
+	  planet.setAttribute("r", parseFloat(planet.dataset.radiusrelativetoearth) * RADIUS_EARTH * RADIUS_SCALE);
+	  distanceFromStar = parseFloat(planet.dataset.distancefromstar) * AU * DISTANCE_SCALE;
+	  planet.setAttribute("cx", 0);
+	  planet.setAttribute("cy", distanceFromStar);
+	  orbit = document.getElementById("exoPlanet1_orbit");
+	  orbit.setAttribute("cx", 0);
+	  orbit.setAttribute("cy", 0);
+	  orbit.setAttribute("r", distanceFromStar);
+	  this.actors.exoPlanet1 = planet;
+
+	  //----------------------------------------------------------------
 	};
 	//==============================================================================
 
@@ -101,10 +160,9 @@
 	    Demonstrates ES6 import function in main.js
 	 */
 	//==============================================================================
-
 	var ImportExample = exports.ImportExample = function () {
 	  function ImportExample() {
-	    var txt = arguments.length <= 0 || arguments[0] === undefined ? "DEFAULT TEXT" : arguments[0];
+	    var txt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "DEFAULT TEXT";
 
 	    _classCallCheck(this, ImportExample);
 

@@ -8,31 +8,21 @@
 </head>
 <body>
 <div id="app">
-<header>
-  <h1>Starter JS</h1>
-</header>
-<main>
-  <output id="console"></output>
-  <table>
-    <tr>
-      <th>Fruit</th>
-      <th>Colour</th>
-    </tr>
-    <tr>
-      <td><a href="#">Apple</a></td>
-      <td>Red, Green</td>
-    </tr>
-    <tr>
-      <td><a href="#">Banana</a></td>
-      <td>Yellow, Green</td>
-    </tr>
-    <tr>
-      <td><a href="#">Cherry</a></td>
-      <td>Red</td>
-    </tr>
-  </table>
-</main>
-<footer>2016</footer>
+<svg id="svg">
+  <circle id="exoPlanet1_orbit" class="orbit" />
+  <circle id="exoPlanet2_orbit" class="orbit" />
+  <circle id="exoPlanet3_orbit" class="orbit" />
+  <circle id="exoPlanet4_orbit" class="orbit" />
+  <circle id="exoStar" class="star"
+    data-radiusrelativetosol="0.807"
+    data-distanceFromStar="0"
+  />
+  <circle id="exoPlanet1" class="planet"
+    data-radiusrelativetoearth="2.311981845"
+    data-distancefromstar="0.0435801241"
+    data-orbitalperiod="3.560130617"
+  />
+</svg>
 </div><!--/#app-->
 </body>
 </html>

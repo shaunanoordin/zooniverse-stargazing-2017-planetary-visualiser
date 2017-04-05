@@ -34,24 +34,44 @@ table th {
   flex-direction: column;
   width: 100%;
   height: 100%;
-  max-width: 50em;
   margin: 0 auto;
   background: #fff;
 }
-#app > header,
-#app > footer {
-  flex: 0 0 auto;
-  padding: 1em;
-  background: #c33;
-  color: #fff;
+#svg {
+  background: #333;
 }
-#app > header h1,
-#app > footer h1 {
-  margin: 0;
-  padding: 0;
+#svg .star {
+  fill: #fc3;
 }
-#app > main {
-  flex: 1 1 auto;
-  padding: 1em;
-  background: #fff;
+#svg .planet {
+  stroke-width: 1;
+  stroke: #fff;
+}
+#svg .planet#exoPlanet1 {
+  fill: #c33;
+}
+#svg .planet#exoPlanet2 {
+  fill: #39c;
+}
+#svg .planet#exoPlanet3 {
+  fill: #3c3;
+}
+#svg .planet#exoPlanet4 {
+  fill: #c3c;
+}
+#svg .orbit {
+  stroke-width: 1;
+  fill: none;
+}
+#svg .orbit#exoPlanet1_orbit {
+  stroke: #c33;
+}
+#svg .orbit#exoPlanet2_orbit {
+  stroke: #39c;
+}
+#svg .orbit#exoPlanet3_orbit {
+  stroke: #3c3;
+}
+#svg .orbit#exoPlanet4_orbit {
+  stroke: #c3c;
 }
