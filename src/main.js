@@ -10,11 +10,15 @@ Starter tempalte for JS projects
 
 import {ImportExample} from "./importExample.js";
 
-const RADIUS_SCALE = 0.00000005;
-const DISTANCE_SCALE = 0.00000005;
+const STAR_RADIUS_SCALE   = 0.00000003;
+const PLANET_RADIUS_SCALE = 0.00000003;
+const DISTANCE_SCALE      = 0.00000003;
 const RADIUS_SUN = 695700000;  //m
 const RADIUS_EARTH = 6371000;  //m
 const AU = 149597870700;  //m
+const FRAMES_PER_SECOND = 50;
+const TIME_STEP = 0.005;
+const PLANET_NAMES = ["exoPlanet1", "exoPlanet2", "exoPlanet3", "exoPlanet4"];
 
 /*  Primary App Class
  */
@@ -28,6 +32,7 @@ class App {
       svg: document.getElementById("svg"),
     };
     this.actors = {};
+    this.time = 0;  //Number of days passed
     //----------------------------------------------------------------
     
     //Set up the SVG
@@ -59,24 +64,40 @@ class App {
     let distanceFromStar, planet, orbit;
     
     this.actors.exoStar = document.getElementById("exoStar");
-    this.actors.exoStar.setAttribute("r", parseFloat(this.actors.exoStar.dataset.radiusrelativetosol) * RADIUS_SUN * RADIUS_SCALE);
+    this.actors.exoStar.setAttribute("r", parseFloat(this.actors.exoStar.dataset.radiusrelativetosol) * RADIUS_SUN * STAR_RADIUS_SCALE);
     this.actors.exoStar.setAttribute("cx", 0);
     this.actors.exoStar.setAttribute("cy", 0);
     
-    planet = document.getElementById("exoPlanet1");
-    console.log();
-    planet.setAttribute("r", parseFloat(planet.dataset.radiusrelativetoearth) * RADIUS_EARTH * RADIUS_SCALE);
-    distanceFromStar = parseFloat(planet.dataset.distancefromstar) * AU * DISTANCE_SCALE;
-    planet.setAttribute("cx", 0);
-    planet.setAttribute("cy", distanceFromStar);
-    orbit = document.getElementById("exoPlanet1_orbit");
-    orbit.setAttribute("cx", 0);
-    orbit.setAttribute("cy", 0);
-    orbit.setAttribute("r", distanceFromStar);
-    this.actors.exoPlanet1 = planet;
+    for (let name of PLANET_NAMES) {
+      planet = document.getElementById(name);
+      planet.setAttribute("r", parseFloat(planet.dataset.radiusrelativetoearth) * RADIUS_EARTH * PLANET_RADIUS_SCALE);
+      distanceFromStar = parseFloat(planet.dataset.distancefromstar) * AU * DISTANCE_SCALE;
+      planet.setAttribute("cx", 0);
+      planet.setAttribute("cy", distanceFromStar);
+      orbit = document.getElementById(name + "_orbit");
+      orbit.setAttribute("cx", 0);
+      orbit.setAttribute("cy", 0);
+      orbit.setAttribute("r", distanceFromStar);
+      this.actors[name] = planet;
+    }
     
     //----------------------------------------------------------------
     
+    this.runCycle = setInterval(this.run.bind(this), 1000 / FRAMES_PER_SECOND);
+  }
+  
+  run() {
+    for (let name of PLANET_NAMES) {
+      let planet = this.actors[name];
+      let distanceFromStar = parseFloat(planet.dataset.distancefromstar) * AU * DISTANCE_SCALE;
+      let orbitalPeriod = parseFloat(planet.dataset.orbitalperiod);
+      let angle = (this.time % orbitalPeriod) / orbitalPeriod * 2 * Math.PI;
+            
+      planet.setAttribute("cx", Math.cos(angle) * distanceFromStar);
+      planet.setAttribute("cy", Math.sin(angle) * distanceFromStar);
+    }
+    
+    this.time += TIME_STEP;
   }
 }
 //==============================================================================
